@@ -92,7 +92,7 @@ def hit_probabilities_bayes(k, p_big, p_reg, posteriors):
 
 # Calculate expected value per spin
 def expected_value_per_spin(settings, posteriors,
-                            bet=100, big_pay=252, reg_pay=96):
+                            bet=3, big_pay=252, reg_pay=96):
     ev = 0.0
 
     for s, prob in posteriors.items():
