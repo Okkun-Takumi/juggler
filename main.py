@@ -93,18 +93,25 @@ def hit_probabilities_bayes(k, p_big, p_reg, posteriors):
 # Calculate expected value per spin
 def expected_value_per_spin(settings, posteriors,
                             bet=3, big_pay=252, reg_pay=96):
+    """
+    Calculate expected value per spin.
+    
+    Slot machine EV = (P(BIG) * BIG_payout + P(REG) * REG_payout) - bet
+    
+    In settings: BIG/REG are stored as denominators (e.g., 273.1 means 1/273.1 probability)
+    """
     ev = 0.0
 
-    for s, prob in posteriors.items():
-        setting = settings.get(s)
+    for setting_num, posterior_prob in posteriors.items():
+        setting = settings.get(setting_num)
         if not setting:
             continue
 
-        # Read denominators (stored as integers like 200 meaning 1/200)
+        # Read denominators
         big_den = setting.get("big")
         reg_den = setting.get("reg")
 
-        # Safely convert to probabilities, handling zero/None/invalid values
+        # Convert to probabilities
         try:
             p_big = 1.0 / float(big_den) if big_den and float(big_den) != 0 else 0.0
         except (TypeError, ValueError):
@@ -115,8 +122,9 @@ def expected_value_per_spin(settings, posteriors,
         except (TypeError, ValueError):
             p_reg = 0.0
 
-        ev_s = -bet + p_big * big_pay + p_reg * reg_pay
-        ev += prob * ev_s
+        # EV for this setting: (probability of win × payout) - bet
+        ev_s = (p_big * big_pay + p_reg * reg_pay) - bet
+        ev += posterior_prob * ev_s
 
     return float(ev)
 
