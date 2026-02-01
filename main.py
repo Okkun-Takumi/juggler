@@ -115,7 +115,16 @@ if __name__ == "__main__":
         )
         st.write(f"Estimated Setting: {best_setting}")
         st.write("Posterior Probabilities:")
-        st.write(posteriors)
+        
+        # Convert posteriors to DataFrame and display as percentages
+        posteriors_df = pd.DataFrame(
+            list(posteriors.items()),
+            columns=['Setting', 'Probability']
+        )
+        posteriors_df['Probability (%)'] = (posteriors_df['Probability'] * 100).round(2)
+        posteriors_df = posteriors_df[['Setting', 'Probability (%)']]
+        st.dataframe(posteriors_df, use_container_width=True)
 
+    # Display the machine settings
     display_machine_settings(config, selection)
     
