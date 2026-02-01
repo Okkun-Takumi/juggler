@@ -123,7 +123,10 @@ if __name__ == "__main__":
         )
         posteriors_df['Probability (%)'] = (posteriors_df['Probability'] * 100).round(2)
         posteriors_df = posteriors_df[['Setting', 'Probability (%)']]
-        st.dataframe(posteriors_df, use_container_width=True)
+        
+        # Highlight the highest probability
+        posteriors_df_styled = posteriors_df.style.highlight_max(subset=['Probability (%)'], color='yellow')
+        st.dataframe(posteriors_df_styled, use_container_width=True)
 
     # Display the machine settings
     display_machine_settings(config, selection)
