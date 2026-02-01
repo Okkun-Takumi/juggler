@@ -200,6 +200,35 @@ if __name__ == "__main__":
         #expected value per spin
         quit_flag, ev = should_quit_with_horizon(settings_dict, posteriors)
         st.write(f"Expected Value per Spin: {ev:.2f}")
+
+        # Debug: Show calculation details
+        with st.expander("Debug: EV Calculation Details"):
+            st.write("**Settings Dictionary:**")
+            st.write(settings_dict)
+            
+            st.write("**Posteriors:**")
+            st.write(posteriors)
+            
+            # Manually calculate EV for debugging
+            st.write("**Detailed EV Calculation:**")
+            ev_debug = 0.0
+            for setting_num, posterior_prob in posteriors.items():
+                setting = settings_dict.get(setting_num)
+                if setting:
+                    big_den = setting.get("big")
+                    reg_den = setting.get("reg")
+                    
+                    p_big = 1.0 / float(big_den) if big_den and float(big_den) != 0 else 0.0
+                    p_reg = 1.0 / float(reg_den) if reg_den and float(reg_den) != 0 else 0.0
+                    
+                    ev_s = (p_big * 252 + p_reg * 96) - 3  # bet=3, big_pay=252, reg_pay=96
+                    ev_debug += posterior_prob * ev_s
+                    
+                    st.write(f"Setting {setting_num}: P(posterior)={posterior_prob:.4f}, P(BIG)={p_big:.6f}, P(REG)={p_reg:.6f}, EV_s={ev_s:.4f}")
+            
+            st.write(f"**Total EV per spin: {ev_debug:.4f}**")
+            st.write(f"**Total EV over 100 spins: {ev_debug * 100:.2f}**")
+        
         # Dynamic recommendation display: colored and shows EV
         rec_placeholder = st.empty()
         # Show EV alongside the recommendation and use color to emphasize
