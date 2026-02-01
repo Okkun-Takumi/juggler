@@ -164,10 +164,13 @@ if __name__ == "__main__":
         #expected value per spin
         quit_flag, ev = should_quit_safe(settings_dict, posteriors)
         st.write(f"Expected Value per Spin: {ev:.2f}")
+        # Dynamic recommendation display: colored and shows EV
+        rec_placeholder = st.empty()
+        # Show EV alongside the recommendation and use color to emphasize
         if quit_flag:
-            st.write("Recommendation: It is advisable to quit playing this machine.")
+            rec_placeholder.error(f"Recommendation: It is advisable to quit playing this machine. (EV: {ev:.2f})")
         else:
-            st.write("Recommendation: You can continue playing this machine.")
+            rec_placeholder.success(f"Recommendation: You can continue playing this machine. (EV: {ev:.2f})")
 
     # Display the machine settings
     display_machine_settings(config, selection)
