@@ -88,8 +88,8 @@ def expected_value_per_spin(settings, posteriors,
     ev = 0.0
 
     for s, prob in posteriors.items():
-        p_big = settings[s]["big"]
-        p_reg = settings[s]["reg"]
+        p_big = 1/settings[s]["big"]
+        p_reg = 1/settings[s]["reg"]
 
         ev_s = (
             -bet
