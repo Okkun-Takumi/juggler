@@ -1,5 +1,7 @@
 import json
 import streamlit as st
+import pandas as pd
+import numpy as np
 
 setting_file_path = 'setting_data.json'
 
@@ -27,4 +29,5 @@ if __name__ == "__main__":
         if setting_data is None:
             st.warning("No 'SettingData' found for the selected machine.")
         else:
-            st.write(setting_data)
+            df = pd.DataFrame(setting_data)
+            st.write(df)
