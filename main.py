@@ -11,14 +11,8 @@ def load_config(setting_file_path):
         config = json.load(file)
     return config
 
-if __name__ == "__main__":
-    config = load_config(setting_file_path)
-    st.title("Machine Settings Viewer")
-    selection = st.selectbox(
-        'Select Machine',
-        options=[machine.get('Name', '') for machine in config.get('machines', [])]
-    )
-
+def display_machine_settings(config, selection):
+    """Display the SettingData for the selected machine."""
     # Find the selected machine dict by name (selectbox returns the Name string)
     selected_machine = next((m for m in config.get('machines', []) if m.get('Name') == selection), None)
 
@@ -31,3 +25,15 @@ if __name__ == "__main__":
         else:
             df = pd.DataFrame(setting_data)
             st.write(df)
+
+if __name__ == "__main__":
+    config = load_config(setting_file_path)
+    st.title("Machine Settings Viewer")
+    selection = st.selectbox(
+        'Select Machine',
+        options=[machine.get('Name', '') for machine in config.get('machines', [])]
+    )
+
+    display_machine_settings(config, selection)
+    your_reg = st.number_input('Enter your REG count:', min_value=0, step=1)
+    your_big = st.number_input('Enter your BIG count:', min_value=0, step=1)
