@@ -188,17 +188,13 @@ if __name__ == "__main__":
             settings_dict[best_setting]["reg"],
             posteriors
         )
-
         st.write(f"Hit Probability within 100 spins: {hit_prob:.2%}")
-        st.write(f"Expected Spins by next hit: {expected_spins:.2f}")  
         
         # Dynamic recommendation display: colored and shows EV
         rec_placeholder = st.empty()
         
         # ---- Bayesian quit judgement ----
         judge = quit_judgement_bayes(settings_dict, posteriors)
-
-        st.subheader("Bayesian Quit Judgement")
 
         st.write(f"High Setting Probability (5&6): {judge['p_high']:.2%}")
         st.write(f"Expected Spins to Next Hit: {judge['expected_spins']:.1f}")
