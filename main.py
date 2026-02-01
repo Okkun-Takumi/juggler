@@ -94,8 +94,8 @@ def quit_judgement_bayes(
     settings,
     posteriors,
     high_settings=(5, 6),
-    th_high=0.5,
-    th_expect=300
+    th_high = 0.25,
+    th_expect = 250
 ):
     """
     Practical Bayesian quit judgement
@@ -123,7 +123,10 @@ def quit_judgement_bayes(
     if expected_spins > th_expect:
         reasons.append("Too deep expected losing stretch")
 
-    should_quit = len(reasons) >= 2
+    should_quit = (
+        p_high < th_high
+        and expected_spins > th_expect
+    )
 
     return {
         "should_quit": should_quit,
