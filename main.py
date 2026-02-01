@@ -82,6 +82,25 @@ def hit_probabilities(k, p_big, p_reg):
 
     return prob_within_k, expected_spins
 
+# Calculate hit probabilities using Bayesian approach
+def hit_probabilities_bayes(k, p_big, p_reg, posteriors):
+    prob_no_hit = 0.0
+    p_big = 1/p_big
+    p_reg = 1/p_reg
+    for s, ps in posteriors.items():
+        p_hit = p_big + p_reg
+        prob_no_hit += ps * ((1 - p_hit) ** k)
+
+    prob_within_k = 1 - prob_no_hit
+
+    expected_spins = sum(
+        posteriors[s] / (p_big + p_reg)
+        for s in posteriors
+    )
+
+    return prob_within_k, expected_spins
+
+
 # Calculate expected value per spin
 def expected_value_per_spin(settings, posteriors,
                             bet=3, big_pay=252, reg_pay=96):
@@ -164,11 +183,19 @@ if __name__ == "__main__":
         st.dataframe(posteriors_df_styled, use_container_width=True)
 
         #hit probabilities
-        hit_prob, expected_spins = hit_probabilities(
-        100,
-        settings_dict[best_setting]["big"],
-        settings_dict[best_setting]["reg"]
+        #hit_prob, expected_spins = hit_probabilities(
+        #100,
+        #settings_dict[best_setting]["big"],
+        #settings_dict[best_setting]["reg"]
+        #)
+        
+        hit_prob, expected_spins = hit_probabilities_bayes(
+            100,
+            settings_dict[best_setting]["big"],
+            settings_dict[best_setting]["reg"],
+            posteriors
         )
+
         st.write(f"Hit Probability within 100 spins: {hit_prob:.2%}")
         st.write(f"Expected Spins by next hit: {expected_spins:.2f}")  
 
