@@ -27,7 +27,8 @@ def display_machine_settings(config, selection):
             st.warning("No 'SettingData' found for the selected machine.")
         else:
             df = pd.DataFrame(setting_data)
-            st.write(df)  
+            df_drropped = df.drop(df.columns[0], axis=1)  # Drop the first column (setting)
+            st.write(df_drropped)  
 
 # Calculate log likelihood
 def log_likelihood(total_number, count_big, count_reg, p_big, p_reg):
@@ -176,9 +177,10 @@ if __name__ == "__main__":
         )
         posteriors_df['Probability (%)'] = (posteriors_df['Probability'] * 100).round(2)
         posteriors_df = posteriors_df[['Setting', 'Probability (%)']]
-        
+        posteriors_df_dropped = posteriors_df.drop(posteriors_df.columns[0], axis=1)  # Drop the first column (Setting)
+
         # Highlight the highest probability
-        posteriors_df_styled = posteriors_df.style.highlight_max(subset=['Probability (%)'], color='yellow')
+        posteriors_df_styled = posteriors_df_dropped.style.highlight_max(subset=['Probability (%)'], color='yellow')
         st.dataframe(posteriors_df_styled, use_container_width=True)
         
         # Hit probabilities within 100 spins
