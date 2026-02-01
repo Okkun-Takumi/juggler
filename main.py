@@ -93,7 +93,7 @@ def hit_probabilities_bayes(k, p_big, p_reg, posteriors):
 def quit_judgement_bayes(
     settings,
     posteriors,
-    high_settings=("5", "6"),
+    high_settings=(5, 6),
     th_high=0.5,
     th_expect=300
 ):
