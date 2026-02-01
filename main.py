@@ -89,57 +89,61 @@ def hit_probabilities_bayes(k, p_big, p_reg, posteriors):
 
     return prob_within_k, expected_spins
 
-
-# Calculate expected value per spin
-def expected_value_per_spin(settings, posteriors,
-                            bet=3, big_pay=252, reg_pay=96):
+# Bayesian quit judgement
+def quit_judgement_bayes(
+    settings,
+    posteriors,
+    horizon=200,
+    high_settings=("5", "6"),
+    th_high=0.45,
+    th_hit=0.25,
+    th_expect=350
+):
     """
-    Calculate expected value per spin.
-    
-    Slot machine EV = (P(BIG) * BIG_payout + P(REG) * REG_payout) - bet
-    
-    In settings: BIG/REG are stored as denominators (e.g., 273.1 means 1/273.1 probability)
+    Bayesian quit judgement based on:
+    1. High-setting posterior probability
+    2. Probability to hit within N spins
+    3. Expected spins until next hit
     """
-    ev = 0.0
 
-    for setting_num, posterior_prob in posteriors.items():
-        setting = settings.get(setting_num)
-        if not setting:
-            continue
+    # ---- 1. 高設定期待度 ----
+    p_high = sum(posteriors.get(s, 0.0) for s in high_settings)
 
-        # Read denominators
-        big_den = setting.get("big")
-        reg_den = setting.get("reg")
+    # ---- 2. 混合当選確率 ----
+    p_hit = 0.0
+    for s, ps in posteriors.items():
+        big = settings[s]["big"]
+        reg = settings[s]["reg"]
+        p_hit_s = (1 / big) + (1 / reg)
+        p_hit += ps * p_hit_s
 
-        # Convert to probabilities
-        try:
-            p_big = 1.0 / float(big_den) if big_den and float(big_den) != 0 else 0.0
-        except (TypeError, ValueError):
-            p_big = 0.0
+    # N回以内に当たる確率
+    prob_hit_within = 1 - (1 - p_hit) ** horizon
 
-        try:
-            p_reg = 1.0 / float(reg_den) if reg_den and float(reg_den) != 0 else 0.0
-        except (TypeError, ValueError):
-            p_reg = 0.0
+    # ---- 3. 期待ハマリ ----
+    expected_spins = float("inf") if p_hit == 0 else 1 / p_hit
 
-        # EV for this setting: (probability of win × payout) - bet
-        ev_s = (p_big * big_pay + p_reg * reg_pay) - bet
-        ev += posterior_prob * ev_s
+    # ---- 判定 ----
+    reasons = []
 
-    return float(ev)
+    if p_high < th_high:
+        reasons.append("Low high-setting probability")
 
-# Determine whether to quit based on expected value
-def should_quit_safe(settings, posteriors, risk_margin=-0.1):
-    ev = expected_value_per_spin(settings, posteriors)
-    return ev < risk_margin, ev
+    if prob_hit_within < th_hit:
+        reasons.append("Low short-term hit probability")
 
-# Determine whether to quit based on expected value over a horizon
-def should_quit_with_horizon(settings, posteriors, horizon=100):
-    ev_per_spin = expected_value_per_spin(settings, posteriors)
-    total_ev = ev_per_spin * horizon
-    return total_ev < 0, total_ev
+    if expected_spins > th_expect:
+        reasons.append("Too deep expected losing stretch")
 
+    should_quit = len(reasons) >= 2  # 2条件以上でヤメ
 
+    return {
+        "should_quit": should_quit,
+        "p_high": p_high,
+        "prob_hit_within": prob_hit_within,
+        "expected_spins": expected_spins,
+        "reasons": reasons
+    }
 
 if __name__ == "__main__":
     config = load_config(setting_file_path)
@@ -196,46 +200,29 @@ if __name__ == "__main__":
 
         st.write(f"Hit Probability within 100 spins: {hit_prob:.2%}")
         st.write(f"Expected Spins by next hit: {expected_spins:.2f}")  
-
-        #expected value per spin
-        quit_flag, ev = should_quit_with_horizon(settings_dict, posteriors)
-        st.write(f"Expected Value per Spin: {ev:.2f}")
-
-        # Debug: Show calculation details
-        with st.expander("Debug: EV Calculation Details"):
-            st.write("**Settings Dictionary:**")
-            st.write(settings_dict)
-            
-            st.write("**Posteriors:**")
-            st.write(posteriors)
-            
-            # Manually calculate EV for debugging
-            st.write("**Detailed EV Calculation:**")
-            ev_debug = 0.0
-            for setting_num, posterior_prob in posteriors.items():
-                setting = settings_dict.get(setting_num)
-                if setting:
-                    big_den = setting.get("big")
-                    reg_den = setting.get("reg")
-                    
-                    p_big = 1.0 / float(big_den) if big_den and float(big_den) != 0 else 0.0
-                    p_reg = 1.0 / float(reg_den) if reg_den and float(reg_den) != 0 else 0.0
-                    
-                    ev_s = (p_big * 252 + p_reg * 96) - 3  # bet=3, big_pay=252, reg_pay=96
-                    ev_debug += posterior_prob * ev_s
-                    
-                    st.write(f"Setting {setting_num}: P(posterior)={posterior_prob:.4f}, P(BIG)={p_big:.6f}, P(REG)={p_reg:.6f}, EV_s={ev_s:.4f}")
-            
-            st.write(f"**Total EV per spin: {ev_debug:.4f}**")
-            st.write(f"**Total EV over 100 spins: {ev_debug * 100:.2f}**")
         
         # Dynamic recommendation display: colored and shows EV
         rec_placeholder = st.empty()
-        # Show EV alongside the recommendation and use color to emphasize
-        if quit_flag:
-            rec_placeholder.error(f"Recommendation: It is advisable to quit playing this machine. (EV: {ev:.2f})")
+        
+        # ---- Bayesian quit judgement ----
+        judge = quit_judgement_bayes(
+                settings_dict,
+                posteriors,
+                horizon=200
+        )
+
+        st.subheader("Bayesian Quit Judgement")
+
+        st.write(f"High Setting Probability (5&6): {judge['p_high']:.2%}")
+        st.write(f"Hit Probability within 200 spins: {judge['prob_hit_within']:.2%}")
+        st.write(f"Expected Spins to Next Hit: {judge['expected_spins']:.1f}")
+
+        if judge["should_quit"]:
+            st.error("Recommendation: QUIT")
+            for r in judge["reasons"]:
+                st.write(f"- {r}")
         else:
-            rec_placeholder.success(f"Recommendation: You can continue playing this machine. (EV: {ev:.2f})")
+            st.success("Recommendation: CONTINUE")
 
     # Display the machine settings
     display_machine_settings(config, selection)
