@@ -3,23 +3,23 @@
         {
             "Name": "I'm juggler ex",
             "SettingData":[
-                {"setting":1,"BIG":273.1,"REG":439.8},
-                {"setting":2,"BIG":269.7,"REG":399.6},
-                {"setting":3,"BIG":269.7,"REG":331.0},
-                {"setting":4,"BIG":259.0,"REG":315.0},
-                {"setting":5,"BIG":259.0,"REG":255.0},
-                {"setting":6,"BIG":255.0,"REG":255.0}
+                {"setting":1,"BIG":1/273.1,"REG":1/439.8},
+                {"setting":2,"BIG":1/269.7,"REG":1/399.6},
+                {"setting":3,"BIG":1/269.7,"REG":1/331.0},
+                {"setting":4,"BIG":1/259.0,"REG":1/315.0},
+                {"setting":5,"BIG":1/259.0,"REG":1/255.0},
+                {"setting":6,"BIG":1/255.0,"REG":1/255.0}
             ]
         },
         {
             "Name":"Funkey juggler 2",
             "SettingData":[
-                {"setting":1,"BIG":266.4,"REG":439.8},
-                {"setting":2,"BIG":259.0,"REG":407.1},
-                {"setting":3,"BIG":256.0,"REG":366.1},
-                {"setting":4,"BIG":249.2,"REG":322.8},
-                {"setting":5,"BIG":240.1,"REG":299.3},
-                {"setting":6,"BIG":219.9,"REG":262.1}
+                {"setting":1,"BIG":1/266.4,"REG":1/439.8},
+                {"setting":2,"BIG":1/259.0,"REG":1/407.1},
+                {"setting":3,"BIG":1/256.0,"REG":1/366.1},
+                {"setting":4,"BIG":1/249.2,"REG":1/322.8},
+                {"setting":5,"BIG":1/240.1,"REG":1/299.3},
+                {"setting":6,"BIG":1/219.9,"REG":1/262.1}
             ]
         },
         {
