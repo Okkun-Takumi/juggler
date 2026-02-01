@@ -11,3 +11,4 @@ def load_config(setting_file_path):
 
 if __name__ == "__main__":
     config = load_config(setting_file_path)
+    st.title("Machine Settings Viewer")
