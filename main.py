@@ -33,7 +33,10 @@ if __name__ == "__main__":
         'Select Machine',
         options=[machine.get('Name', '') for machine in config.get('machines', [])]
     )
-
-    display_machine_settings(config, selection)
+    your_total_number = st.number_input('Enter your total number of games:', min_value=0, step=100)
     your_reg = st.number_input('Enter your REG count:', min_value=0, step=1)
     your_big = st.number_input('Enter your BIG count:', min_value=0, step=1)
+
+
+    display_machine_settings(config, selection)
+    
