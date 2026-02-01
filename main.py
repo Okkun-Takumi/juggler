@@ -93,34 +93,25 @@ def hit_probabilities_bayes(k, p_big, p_reg, posteriors):
 def quit_judgement_bayes(
     settings,
     posteriors,
-    horizon=200,
     high_settings=("5", "6"),
-    th_high=0.45,
-    th_hit=0.25,
-    th_expect=350
+    th_high=0.5,
+    th_expect=300
 ):
     """
-    Bayesian quit judgement based on:
-    1. High-setting posterior probability
-    2. Probability to hit within N spins
-    3. Expected spins until next hit
+    Practical Bayesian quit judgement
     """
 
     # ---- 1. 高設定期待度 ----
     p_high = sum(posteriors.get(s, 0.0) for s in high_settings)
 
-    # ---- 2. 混合当選確率 ----
+    # ---- 2. 正しい混合当選確率 ----
     p_hit = 0.0
     for s, ps in posteriors.items():
         big = settings[s]["big"]
         reg = settings[s]["reg"]
-        p_hit_s = (1 / big) + (1 / reg)
+        p_hit_s = 1 - (1 - 1/big) * (1 - 1/reg)
         p_hit += ps * p_hit_s
 
-    # N回以内に当たる確率
-    prob_hit_within = 1 - (1 - p_hit) ** horizon
-
-    # ---- 3. 期待ハマリ ----
     expected_spins = float("inf") if p_hit == 0 else 1 / p_hit
 
     # ---- 判定 ----
@@ -129,21 +120,18 @@ def quit_judgement_bayes(
     if p_high < th_high:
         reasons.append("Low high-setting probability")
 
-    if prob_hit_within < th_hit:
-        reasons.append("Low short-term hit probability")
-
     if expected_spins > th_expect:
         reasons.append("Too deep expected losing stretch")
 
-    should_quit = len(reasons) >= 2  # 2条件以上でヤメ
+    should_quit = len(reasons) >= 2
 
     return {
         "should_quit": should_quit,
         "p_high": p_high,
-        "prob_hit_within": prob_hit_within,
         "expected_spins": expected_spins,
         "reasons": reasons
     }
+
 
 if __name__ == "__main__":
     config = load_config(setting_file_path)
@@ -205,16 +193,11 @@ if __name__ == "__main__":
         rec_placeholder = st.empty()
         
         # ---- Bayesian quit judgement ----
-        judge = quit_judgement_bayes(
-                settings_dict,
-                posteriors,
-                horizon=200
-        )
+        judge = quit_judgement_bayes(settings_dict, posteriors)
 
         st.subheader("Bayesian Quit Judgement")
 
         st.write(f"High Setting Probability (5&6): {judge['p_high']:.2%}")
-        st.write(f"Hit Probability within 200 spins: {judge['prob_hit_within']:.2%}")
         st.write(f"Expected Spins to Next Hit: {judge['expected_spins']:.1f}")
 
         if judge["should_quit"]:
