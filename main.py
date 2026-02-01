@@ -33,7 +33,7 @@ def display_machine_settings(config, selection):
 def log_likelihood(total_number, count_big, count_reg, p_big, p_reg):
     p_big = 1/p_big
     p_reg = 1/p_reg
-    p_miss = 1.0 - p_big - p_reg
+    p_miss = max(1e-12, 1.0 - p_big - p_reg)
     if p_miss <= 0:
         return float("-inf")
 
@@ -71,17 +71,6 @@ def estimate_settings(total_number, count_big, count_reg, settings):
 
     return best_setting, posteriors
 
-# Calculate hit probabilities
-def hit_probabilities(k, p_big, p_reg):
-    p_big = 1/p_big
-    p_reg = 1/p_reg
-    p_hit = p_big + p_reg
-
-    prob_within_k = 1.0 - (1.0 - p_hit) ** k
-    expected_spins = 1.0 / p_hit
-
-    return prob_within_k, expected_spins
-
 # Calculate hit probabilities using Bayesian approach
 def hit_probabilities_bayes(k, p_big, p_reg, posteriors):
     prob_no_hit = 0.0
@@ -103,7 +92,7 @@ def hit_probabilities_bayes(k, p_big, p_reg, posteriors):
 
 # Calculate expected value per spin
 def expected_value_per_spin(settings, posteriors,
-                            bet=3, big_pay=252, reg_pay=96):
+                            bet=100, big_pay=252, reg_pay=96):
     ev = 0.0
 
     for s, prob in posteriors.items():
@@ -135,6 +124,13 @@ def expected_value_per_spin(settings, posteriors,
 def should_quit_safe(settings, posteriors, risk_margin=-0.1):
     ev = expected_value_per_spin(settings, posteriors)
     return ev < risk_margin, ev
+
+# Determine whether to quit based on expected value over a horizon
+def should_quit_with_horizon(settings, posteriors, horizon=100):
+    ev_per_spin = expected_value_per_spin(settings, posteriors)
+    total_ev = ev_per_spin * horizon
+    return total_ev < 0, total_ev
+
 
 
 if __name__ == "__main__":
@@ -181,14 +177,8 @@ if __name__ == "__main__":
         # Highlight the highest probability
         posteriors_df_styled = posteriors_df.style.highlight_max(subset=['Probability (%)'], color='yellow')
         st.dataframe(posteriors_df_styled, use_container_width=True)
-
-        #hit probabilities
-        #hit_prob, expected_spins = hit_probabilities(
-        #100,
-        #settings_dict[best_setting]["big"],
-        #settings_dict[best_setting]["reg"]
-        #)
         
+        # Hit probabilities within 100 spins
         hit_prob, expected_spins = hit_probabilities_bayes(
             100,
             settings_dict[best_setting]["big"],
@@ -200,7 +190,7 @@ if __name__ == "__main__":
         st.write(f"Expected Spins by next hit: {expected_spins:.2f}")  
 
         #expected value per spin
-        quit_flag, ev = should_quit_safe(settings_dict, posteriors)
+        quit_flag, ev = should_quit_with_horizon(settings_dict, posteriors)
         st.write(f"Expected Value per Spin: {ev:.2f}")
         # Dynamic recommendation display: colored and shows EV
         rec_placeholder = st.empty()
