@@ -88,18 +88,29 @@ def expected_value_per_spin(settings, posteriors,
     ev = 0.0
 
     for s, prob in posteriors.items():
-        p_big = 1/settings[s]["big"]
-        p_reg = 1/settings[s]["reg"]
+        setting = settings.get(s)
+        if not setting:
+            continue
 
-        ev_s = (
-            -bet
-            + p_big * big_pay
-            + p_reg * reg_pay
-        )
+        # Read denominators (stored as integers like 200 meaning 1/200)
+        big_den = setting.get("big")
+        reg_den = setting.get("reg")
 
+        # Safely convert to probabilities, handling zero/None/invalid values
+        try:
+            p_big = 1.0 / float(big_den) if big_den and float(big_den) != 0 else 0.0
+        except (TypeError, ValueError):
+            p_big = 0.0
+
+        try:
+            p_reg = 1.0 / float(reg_den) if reg_den and float(reg_den) != 0 else 0.0
+        except (TypeError, ValueError):
+            p_reg = 0.0
+
+        ev_s = -bet + p_big * big_pay + p_reg * reg_pay
         ev += prob * ev_s
 
-    return ev
+    return float(ev)
 
 # Determine whether to quit based on expected value
 def should_quit_safe(settings, posteriors, risk_margin=-0.1):
