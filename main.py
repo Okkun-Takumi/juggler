@@ -82,6 +82,30 @@ def hit_probabilities(k, p_big, p_reg):
 
     return prob_within_k, expected_spins
 
+# Calculate expected value per spin
+def expected_value_per_spin(settings, posteriors,
+                            bet=3, big_pay=252, reg_pay=96):
+    ev = 0.0
+
+    for s, prob in posteriors.items():
+        p_big = settings[s]["big"]
+        p_reg = settings[s]["reg"]
+
+        ev_s = (
+            -bet
+            + p_big * big_pay
+            + p_reg * reg_pay
+        )
+
+        ev += prob * ev_s
+
+    return ev
+
+# Determine whether to quit based on expected value
+def should_quit_safe(settings, posteriors, risk_margin=-0.1):
+    ev = expected_value_per_spin(settings, posteriors)
+    return ev < risk_margin, ev
+
 
 if __name__ == "__main__":
     config = load_config(setting_file_path)
@@ -127,6 +151,23 @@ if __name__ == "__main__":
         # Highlight the highest probability
         posteriors_df_styled = posteriors_df.style.highlight_max(subset=['Probability (%)'], color='yellow')
         st.dataframe(posteriors_df_styled, use_container_width=True)
+
+        #hit probabilities
+        hit_prob, expected_spins = hit_probabilities(
+        100,
+        settings_dict[best_setting]["big"],
+        settings_dict[best_setting]["reg"]
+        )
+        st.write(f"Hit Probability within 100 spins: {hit_prob:.2%}")
+        st.write(f"Expected Spins by next hit: {expected_spins:.2f}")  
+
+        #expected value per spin
+        quit_flag, ev = should_quit_safe(settings_dict, posteriors)
+        st.write(f"Expected Value per Spin: {ev:.2f}")
+        if quit_flag:
+            st.write("Recommendation: It is advisable to quit playing this machine.")
+        else:
+            st.write("Recommendation: You can continue playing this machine.")
 
     # Display the machine settings
     display_machine_settings(config, selection)
