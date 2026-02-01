@@ -1,0 +1,92 @@
+{
+    "machines": [
+        {
+            "Name": "I'm juggler ex",
+            "SettingData":[
+                {"setting":1,"BIG":273.1,"REG":439.8},
+                {"setting":2,"BIG":269.7,"REG":399.6},
+                {"setting":3,"BIG":269.7,"REG":331.0},
+                {"setting":4,"BIG":259.0,"REG":315.0},
+                {"setting":5,"BIG":259.0,"REG":255.0},
+                {"setting":6,"BIG":255.0,"REG":255.0}
+            ]
+        },
+        {
+            "Name":"Funkey juggler 2",
+            "SettingData":[
+                {"setting":1,"BIG":266.4,"REG":439.8},
+                {"setting":2,"BIG":259.0,"REG":407.1},
+                {"setting":3,"BIG":256.0,"REG":366.1},
+                {"setting":4,"BIG":249.2,"REG":322.8},
+                {"setting":5,"BIG":240.1,"REG":299.3},
+                {"setting":6,"BIG":219.9,"REG":262.1}
+            ]
+        },
+        {
+            "Name":"my juggler V",
+            "SettingData":[
+                {"setting":1,"BIG":273.1,"REG":409.6},
+                {"setting":2,"BIG":270.8,"REG":385.5},
+                {"setting":3,"BIG":266.4,"REG":336.1},
+                {"setting":4,"BIG":254.0,"REG":290.0},
+                {"setting":5,"BIG":240.1,"REG":268.6},
+                {"setting":6,"BIG":229.1,"REG":229.1}
+            ]
+        },
+        {
+            "Name": "Happy juggler VIII",
+            "SettingData":[
+                {"setting":1,"BIG":273.1,"REG":397.2},
+                {"setting":2,"BIG":270.8,"REG":362.1},
+                {"setting":3,"BIG":263.2,"REG":332.7},
+                {"setting":4,"BIG":254.0,"REG":300.6},
+                {"setting":5,"BIG":239.2,"REG":273.1},
+                {"setting":6,"BIG":226.0,"REG":256.4}
+            ]
+        },
+        {
+            "Name": "Gogo juggler 3",
+            "SettingData":[
+                {"setting":1,"BIG":259.0,"REG":354.2},
+                {"setting":2,"BIG":258.0,"REG":332.7},
+                {"setting":3,"BIG":257.0,"REG":306.2},
+                {"setting":4,"BIG":254.0,"REG":268.6},
+                {"setting":5,"BIG":247.3,"REG":247.3},
+                {"setting":6,"BIG":234.9,"REG":234.9}
+            ]
+        },
+        {
+            "Name": "Juggler girls SS",
+            "SettingData":[
+                {"setting":1,"BIG":273.1,"REG":381.0},
+                {"setting":2,"BIG":270.8,"REG":350.5},
+                {"setting":3,"BIG":260.1,"REG":316.6},
+                {"setting":4,"BIG":250.1,"REG":281.3},
+                {"setting":5,"BIG":243.6,"REG":270.8},
+                {"setting":6,"BIG":226.0,"REG":252.1}
+            ]
+        },
+        {
+            "Name": "Mr juggler",
+            "SettingData":[
+                {"setting":1,"BIG":268.6,"REG":374.5},
+                {"setting":2,"BIG":267.5,"REG":354.2},
+                {"setting":3,"BIG":260.1,"REG":331.0},
+                {"setting":4,"BIG":249.2,"REG":291.3},
+                {"setting":5,"BIG":240.9,"REG":257.0},
+                {"setting":6,"BIG":237.4,"REG":237.4}
+            ]
+        },
+        {
+            "Name": "Ultra miracle juggler",
+            "SettingData":[
+                {"setting":1,"BIG":273.1,"REG":439.8},
+                {"setting":2,"BIG":269.7,"REG":399.6},
+                {"setting":3,"BIG":269.7,"REG":331.0},
+                {"setting":4,"BIG":259.0,"REG":315.1},
+                {"setting":5,"BIG":259.0,"REG":255.0},
+                {"setting":6,"BIG":255.0,"REG":255.0}
+            ]
+        }
+    ]
+}
